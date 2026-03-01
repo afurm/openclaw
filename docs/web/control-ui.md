@@ -15,6 +15,9 @@ The Control UI is a small **Vite + Lit** single-page app served by the Gateway:
 
 It speaks **directly to the Gateway WebSocket** on the same port.
 
+For contributors implementing language generation, see
+[Control UI AI i18n](/web/control-ui-i18n-on-demand).
+
 ## Quick open (local)
 
 If the Gateway is running on the same computer, open:
