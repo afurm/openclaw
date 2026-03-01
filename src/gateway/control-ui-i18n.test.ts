@@ -26,7 +26,7 @@ type ServiceInternals = {
   jobsById: Map<string, InternalJobRecord>;
   generateTranslatedFlatMap: (
     manifest: ControlUiEnglishSourceManifest,
-    locale: string,
+    params: { locale: string; sessionKey: string },
   ) => Promise<Record<string, string>>;
 };
 
@@ -86,7 +86,12 @@ describe("ControlUiI18nService", () => {
       },
     };
 
-    await expect(internal.generateTranslatedFlatMap(manifest, "uk")).resolves.toEqual({
+    await expect(
+      internal.generateTranslatedFlatMap(manifest, {
+        locale: "uk",
+        sessionKey: "controlui-i18n:uk:test-job-id",
+      }),
+    ).resolves.toEqual({
       "section.hello": "Привіт",
     });
 
@@ -94,6 +99,43 @@ describe("ControlUiI18nService", () => {
     expect(agentCommand.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({
         timeout: "120",
+      }),
+    );
+  });
+
+  it("uses unique per-job generation session keys", async () => {
+    agentCommand.mockResolvedValue({
+      payloads: [{ text: JSON.stringify({ "section.hello": "Привіт" }) }],
+    });
+    const service = await createService();
+    const internal = service as unknown as ServiceInternals;
+    const manifest: ControlUiEnglishSourceManifest = {
+      schemaVersion: 1,
+      sourceLocale: "en",
+      sourceHash: "hash",
+      keyCount: 1,
+      flat: {
+        "section.hello": "Hello",
+      },
+    };
+
+    await internal.generateTranslatedFlatMap(manifest, {
+      locale: "uk",
+      sessionKey: "controlui-i18n:uk:job-1",
+    });
+    await internal.generateTranslatedFlatMap(manifest, {
+      locale: "uk",
+      sessionKey: "controlui-i18n:uk:job-2",
+    });
+
+    expect(agentCommand.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({
+        sessionKey: "controlui-i18n:uk:job-1",
+      }),
+    );
+    expect(agentCommand.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({
+        sessionKey: "controlui-i18n:uk:job-2",
       }),
     );
   });

@@ -11,6 +11,14 @@ const SKIP_TEXT_TAGS = new Set([
   "OPTION",
 ]);
 
+const DYNAMIC_LITERAL_SKIP_SELECTOR = [
+  "[data-i18n-literal-ignore]",
+  "[data-i18n-literal-dynamic]",
+  ".chat-thread",
+  ".sidebar-markdown",
+  ".log-stream",
+].join(", ");
+
 type TrackedAttribute = "title" | "placeholder" | "aria-label";
 
 type TextLiteralState = {
@@ -40,7 +48,7 @@ function shouldSkipElement(el: Element | null): boolean {
   if (SKIP_TEXT_TAGS.has(el.tagName)) {
     return true;
   }
-  if (el.closest("[data-i18n-literal-ignore]")) {
+  if (el.closest(DYNAMIC_LITERAL_SKIP_SELECTOR)) {
     return true;
   }
   if (el.classList.contains("mono") || el.closest(".mono")) {

@@ -217,6 +217,10 @@ function buildGenerationPrompt(manifest: ControlUiEnglishSourceManifest, locale:
   ].join("\n");
 }
 
+function buildGenerationSessionKey(params: { locale: string; jobId: string }): string {
+  return `controlui-i18n:${params.locale}:${params.jobId}`;
+}
+
 export type ControlUiI18nServiceOptions = {
   stateDir: string;
   controlUiRoot: ControlUiRootState | undefined;
@@ -406,7 +410,13 @@ export class ControlUiI18nService {
 
     try {
       const manifest = this.readManifestOrThrow();
-      const translatedFlat = await this.generateTranslatedFlatMap(manifest, job.locale);
+      const translatedFlat = await this.generateTranslatedFlatMap(manifest, {
+        locale: job.locale,
+        sessionKey: buildGenerationSessionKey({
+          locale: job.locale,
+          jobId: job.jobId,
+        }),
+      });
       const translation = unflattenTranslationMap(translatedFlat);
       const existing = await this.readGeneratedLocaleFile(job.locale);
       const generatedAtMs = existing?.generatedAtMs ?? nowMs();
@@ -439,13 +449,13 @@ export class ControlUiI18nService {
 
   private async generateTranslatedFlatMap(
     manifest: ControlUiEnglishSourceManifest,
-    locale: string,
+    params: { locale: string; sessionKey: string },
   ): Promise<Record<string, string>> {
-    const prompt = buildGenerationPrompt(manifest, locale);
+    const prompt = buildGenerationPrompt(manifest, params.locale);
     const result = await agentCommand(
       {
         message: prompt,
-        sessionKey: `controlui-i18n:${locale}`,
+        sessionKey: params.sessionKey,
         deliver: false,
         timeout: GENERATION_TIMEOUT_SECONDS,
         thinking: "minimal",

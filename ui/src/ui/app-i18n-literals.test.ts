@@ -70,4 +70,45 @@ describe("applyLiteralTranslations", () => {
     applyLiteralTranslations(document.body);
     expect(button.getAttribute("title")).toBe(source);
   });
+
+  it("does not mutate dynamic content regions", async () => {
+    const source = "Gateway Dashboard";
+    const attrSource = "Open settings";
+    const encodedSource = encodeLiteralKey(source);
+    const encodedAttr = encodeLiteralKey(attrSource);
+
+    i18n.registerTranslation("uk-x-literals-dynamic", {
+      auto: {
+        [encodedSource]: "Панель шлюзу",
+        [encodedAttr]: "Відкрити налаштування",
+      },
+    });
+
+    const chatThread = document.createElement("div");
+    chatThread.className = "chat-thread";
+    chatThread.textContent = source;
+    chatThread.setAttribute("title", attrSource);
+
+    const logStream = document.createElement("div");
+    logStream.className = "log-stream";
+    logStream.textContent = source;
+    logStream.setAttribute("title", attrSource);
+
+    const optInDynamic = document.createElement("div");
+    optInDynamic.setAttribute("data-i18n-literal-dynamic", "1");
+    optInDynamic.textContent = source;
+    optInDynamic.setAttribute("title", attrSource);
+
+    document.body.append(chatThread, logStream, optInDynamic);
+
+    await i18n.setLocale("uk-x-literals-dynamic");
+    applyLiteralTranslations(document.body);
+
+    expect(chatThread.textContent).toBe(source);
+    expect(chatThread.getAttribute("title")).toBe(attrSource);
+    expect(logStream.textContent).toBe(source);
+    expect(logStream.getAttribute("title")).toBe(attrSource);
+    expect(optInDynamic.textContent).toBe(source);
+    expect(optInDynamic.getAttribute("title")).toBe(attrSource);
+  });
 });
