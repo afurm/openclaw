@@ -144,10 +144,6 @@ export const en: TranslationMap = {
       subtitle:
         "Generate additional Control UI translations on demand using your configured AI provider/model.",
       searchPlaceholder: "Search languages or locale code (e.g. Ukrainian, uk, uk-UA)",
-      customLocaleLabel: "Custom locale code (BCP-47)",
-      customLocalePlaceholder: "uk-UA",
-      canonical: "Canonical: {locale}",
-      invalidCustomLocale: "Enter a valid locale code",
       generateTranslation: "Generate translation",
       regenerateTranslation: "Regenerate translation",
       providerNotice:

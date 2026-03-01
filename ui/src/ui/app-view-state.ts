@@ -62,7 +62,6 @@ export type AppViewState = {
   controlUiI18nJobs: ControlUiI18nJob[];
   controlUiI18nModalOpen: boolean;
   controlUiI18nModalSearch: string;
-  controlUiI18nModalCustomLocale: string;
   controlUiI18nConfirmRequest: { locale: string; force: boolean } | null;
   controlUiI18nPendingAutoSelectLocale: string | null;
   controlUiNotice: AppNotice | null;
@@ -296,7 +295,6 @@ export type AppViewState = {
   handleControlUiI18nOpenModal: () => void;
   handleControlUiI18nCloseModal: () => void;
   handleControlUiI18nSearchChange: (next: string) => void;
-  handleControlUiI18nCustomLocaleChange: (next: string) => void;
   handleControlUiI18nRequestGenerate: (locale: string, opts?: { force?: boolean }) => void;
   handleControlUiI18nCancelConfirm: () => void;
   handleControlUiI18nConfirmGenerate: () => Promise<void>;

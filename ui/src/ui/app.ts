@@ -147,7 +147,6 @@ export class OpenClawApp extends LitElement {
   @state() controlUiI18nJobs: ControlUiI18nJob[] = [];
   @state() controlUiI18nModalOpen = false;
   @state() controlUiI18nModalSearch = "";
-  @state() controlUiI18nModalCustomLocale = "";
   @state() controlUiI18nConfirmRequest: { locale: string; force: boolean } | null = null;
   @state() controlUiI18nPendingAutoSelectLocale: string | null = null;
   @state() controlUiNotice: AppNotice | null = null;
@@ -630,10 +629,6 @@ export class OpenClawApp extends LitElement {
 
   handleControlUiI18nSearchChange(next: string) {
     this.controlUiI18nModalSearch = next;
-  }
-
-  handleControlUiI18nCustomLocaleChange(next: string) {
-    this.controlUiI18nModalCustomLocale = next;
   }
 
   handleControlUiI18nRequestGenerate(locale: string, opts?: { force?: boolean }) {

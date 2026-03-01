@@ -2197,19 +2197,12 @@
   width: min(860px, 100%);
   max-height: min(85vh, 900px);
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 12px;
 }
 
 .i18n-language-modal__search input {
   width: 100%;
-}
-
-.i18n-language-modal__custom {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  background: var(--secondary);
 }
 
 .i18n-language-modal__list {

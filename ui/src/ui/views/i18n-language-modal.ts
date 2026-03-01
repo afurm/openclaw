@@ -1,5 +1,5 @@
 import { html, nothing } from "lit";
-import { BUILTIN_LOCALES, canonicalizeLocale, isBuiltinLocale, t } from "../../i18n/index.ts";
+import { BUILTIN_LOCALES, isBuiltinLocale, t } from "../../i18n/index.ts";
 import { resolveLanguageLabel, searchLanguageCatalog } from "../../i18n/language-catalog.ts";
 import type { AppViewState } from "../app-view-state.ts";
 
@@ -41,10 +41,6 @@ export function renderI18nLanguageModal(state: AppViewState) {
       return resolveLanguageLabel(a).localeCompare(resolveLanguageLabel(b));
     });
 
-  const customCanonical = canonicalizeLocale(state.controlUiI18nModalCustomLocale);
-  const customIsGenerated = customCanonical ? generatedMap.has(customCanonical) : false;
-  const customGenerating = customCanonical ? isGenerating(state, customCanonical) : false;
-
   return html`
     ${
       state.controlUiI18nModalOpen
@@ -72,46 +68,6 @@ export function renderI18nLanguageModal(state: AppViewState) {
                     @input=${(e: Event) =>
                       state.handleControlUiI18nSearchChange((e.target as HTMLInputElement).value)}
                   />
-                </div>
-
-                <div class="i18n-language-modal__custom">
-                  <label class="field">
-                    <span>${t("controlUiI18n.modal.customLocaleLabel")}</span>
-                    <input
-                      .value=${state.controlUiI18nModalCustomLocale}
-                      placeholder=${t("controlUiI18n.modal.customLocalePlaceholder")}
-                      @input=${(e: Event) =>
-                        state.handleControlUiI18nCustomLocaleChange(
-                          (e.target as HTMLInputElement).value,
-                        )}
-                    />
-                  </label>
-                  <div class="row" style="margin-top: 8px;">
-                    <button
-                      class="btn btn--sm"
-                      ?disabled=${!customCanonical || customGenerating}
-                      @click=${() =>
-                        customCanonical &&
-                        state.handleControlUiI18nRequestGenerate(customCanonical, {
-                          force: customIsGenerated,
-                        })}
-                    >
-                      ${
-                        customGenerating
-                          ? t("common.generating")
-                          : customIsGenerated
-                            ? t("common.regenerate")
-                            : t("common.generate")
-                      }
-                    </button>
-                    <span class="muted">
-                      ${
-                        customCanonical
-                          ? t("controlUiI18n.modal.canonical", { locale: customCanonical })
-                          : t("controlUiI18n.modal.invalidCustomLocale")
-                      }
-                    </span>
-                  </div>
                 </div>
 
                 <div class="i18n-language-modal__list" role="list">
