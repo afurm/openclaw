@@ -18,6 +18,7 @@ import type {
 const GENERATED_LOCALE_SCHEMA_VERSION = 1;
 const COMPLETED_JOB_RETENTION_MS = 60 * 60_000;
 const FAILED_JOB_RETENTION_MS = 24 * 60 * 60_000;
+const GENERATION_TIMEOUT_SECONDS = "120";
 
 type JobStatus = GatewayControlUiI18nEventPayload["status"];
 
@@ -247,7 +248,16 @@ export class ControlUiI18nService {
       .toSorted((a, b) => a.locale.localeCompare(b.locale));
 
     const jobs = [...this.jobsById.values()]
-      .map((job) => ({ ...job }))
+      .map((job) => ({
+        jobId: job.jobId,
+        locale: job.locale,
+        status: job.status,
+        requestedAtMs: job.requestedAtMs,
+        startedAtMs: job.startedAtMs,
+        finishedAtMs: job.finishedAtMs,
+        error: job.error,
+        requesterConnId: job.requesterConnId,
+      }))
       .toSorted((a, b) => b.requestedAtMs - a.requestedAtMs);
 
     return {
@@ -437,7 +447,7 @@ export class ControlUiI18nService {
         message: prompt,
         sessionKey: `controlui-i18n:${locale}`,
         deliver: false,
-        timeout: "120000",
+        timeout: GENERATION_TIMEOUT_SECONDS,
         thinking: "minimal",
       },
       getNoopRuntime(),
