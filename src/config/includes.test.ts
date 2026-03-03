@@ -600,17 +600,16 @@ describe("security: path traversal protection (CWE-22)", () => {
         rootPollution: JSON.parse('{"__proto__":{"polluted":"root"}}'),
       };
 
-      const resolved = resolveConfigIncludes(input, DEFAULT_BASE_PATH);
+      const resolvedUnknown = resolveConfigIncludes(input, DEFAULT_BASE_PATH);
+      expect(resolvedUnknown).toBeTypeOf("object");
+      expect(resolvedUnknown).not.toBeNull();
+      const resolved = resolvedUnknown as Record<string, unknown>;
 
       expect(Object.prototype.hasOwnProperty.call(resolved, "__proto__")).toBe(false);
       expect(Object.keys(resolved)).toEqual(["safe", "nested", "rootPollution"]);
-      expect((resolved as Record<string, unknown>).polluted).toBeUndefined();
-      expect(
-        ((resolved as Record<string, unknown>).nested as Record<string, unknown>).polluted,
-      ).toBe(undefined);
-      expect(
-        ((resolved as Record<string, unknown>).rootPollution as Record<string, unknown>).polluted,
-      ).toBeUndefined();
+      expect(resolved.polluted).toBeUndefined();
+      expect((resolved.nested as Record<string, unknown>).polluted).toBeUndefined();
+      expect((resolved.rootPollution as Record<string, unknown>).polluted).toBeUndefined();
       expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
     });
   });
