@@ -612,6 +612,16 @@ describe("security: path traversal protection (CWE-22)", () => {
       expect((resolved.rootPollution as Record<string, unknown>).polluted).toBeUndefined();
       expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
     });
+
+    it("ignores blocked sibling keys for include merges", () => {
+      const files = { [configPath("array.json")]: ["a", "b"] };
+      const input = JSON.parse('{"$include":"./array.json","__proto__":{"polluted":true}}');
+
+      const resolved = resolve(input, files);
+
+      expect(resolved).toEqual(["a", "b"]);
+      expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
+    });
   });
 
   describe("edge cases", () => {

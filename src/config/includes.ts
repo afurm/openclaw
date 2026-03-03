@@ -133,7 +133,7 @@ class IncludeProcessor {
 
   private processInclude(obj: Record<string, unknown>): unknown {
     const includeValue = obj[INCLUDE_KEY];
-    const otherKeys = Object.keys(obj).filter((k) => k !== INCLUDE_KEY);
+    const otherKeys = Object.keys(obj).filter((k) => k !== INCLUDE_KEY && !isBlockedObjectKey(k));
     const included = this.resolveInclude(includeValue);
 
     if (otherKeys.length === 0) {
@@ -150,9 +150,6 @@ class IncludeProcessor {
     // Merge included content with sibling keys
     const rest: Record<string, unknown> = {};
     for (const key of otherKeys) {
-      if (isBlockedObjectKey(key)) {
-        continue;
-      }
       rest[key] = this.process(obj[key]);
     }
     return deepMerge(included, rest);
