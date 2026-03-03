@@ -592,6 +592,27 @@ describe("security: path traversal protection (CWE-22)", () => {
         expect(result).toEqual(testCase.expected);
       }
     });
+
+    it("drops blocked prototype keys while resolving include trees", () => {
+      const input = {
+        safe: 1,
+        nested: JSON.parse('{"ok":true,"__proto__":{"polluted":"nested"}}'),
+        rootPollution: JSON.parse('{"__proto__":{"polluted":"root"}}'),
+      };
+
+      const resolved = resolveConfigIncludes(input, DEFAULT_BASE_PATH);
+
+      expect(Object.prototype.hasOwnProperty.call(resolved, "__proto__")).toBe(false);
+      expect(Object.keys(resolved)).toEqual(["safe", "nested", "rootPollution"]);
+      expect((resolved as Record<string, unknown>).polluted).toBeUndefined();
+      expect(
+        ((resolved as Record<string, unknown>).nested as Record<string, unknown>).polluted,
+      ).toBe(undefined);
+      expect(
+        ((resolved as Record<string, unknown>).rootPollution as Record<string, unknown>).polluted,
+      ).toBeUndefined();
+      expect((Object.prototype as Record<string, unknown>).polluted).toBeUndefined();
+    });
   });
 
   describe("edge cases", () => {
